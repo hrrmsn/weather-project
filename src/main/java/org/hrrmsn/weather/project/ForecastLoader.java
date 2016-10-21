@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class ForecastLoader {
     private static final String DARK_SKY_SECRET_KEY = "45a79aaba25b853a41f8545ea4442db6";
-    private static final String API_DARKSKY_URL = "https://api.darksky.net/forecast";
+    private static final String API_DARK_SKY_URL = "https://api.darksky.net/forecast";
     private static final String URL_SEPARATOR = "/";
     
     private String latitude;
@@ -28,7 +28,7 @@ public class ForecastLoader {
     }
     
     public String getForecast() throws WeatherException {
-        String url = API_DARKSKY_URL + URL_SEPARATOR + DARK_SKY_SECRET_KEY + URL_SEPARATOR + latitude + "," 
+        String url = API_DARK_SKY_URL + URL_SEPARATOR + DARK_SKY_SECRET_KEY + URL_SEPARATOR + latitude + "," 
                 + longtitude;
         String charset = "UTF-8";
         String unitsParam = "si";

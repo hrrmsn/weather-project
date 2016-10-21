@@ -1,5 +1,7 @@
 package org.hrrmsn.weather.project;
 
+import java.io.File;
+
 /**
  *
  * @author hrrmsn
@@ -13,5 +15,8 @@ public class Main {
         JSONWeatherParser forecastParser = new JSONWeatherParser(forecastLoader.getForecast());
         System.out.println("icon: " + forecastParser.getIcon());
         System.out.println("temperature: " + forecastParser.getTemperature());
+        
+        DesktopBackgroundBuilder backgroundBuilder = new DesktopBackgroundBuilder();
+        backgroundBuilder.build(forecastParser.getIcon(), forecastParser.getTemperature());
     }
 }
