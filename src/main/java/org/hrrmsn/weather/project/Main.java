@@ -1,22 +1,17 @@
 package org.hrrmsn.weather.project;
 
-import java.io.File;
+import java.util.Timer;
 
 /**
  *
  * @author hrrmsn
  */
 public class Main {
-    private static final String MY_LOCATION_LATITUDE = "55.6092";
-    private static final String MY_LOCATION_LONGTITUDE = "37.5845";
+    private static final long DELAY = 10_000;
+    private static final long PERIOD = 10_000;
     
-    public static void main(String[] args) throws WeatherException {
-        ForecastLoader forecastLoader = new ForecastLoader(MY_LOCATION_LATITUDE, MY_LOCATION_LONGTITUDE);
-        JSONWeatherParser forecastParser = new JSONWeatherParser(forecastLoader.getForecast());
-        System.out.println("icon: " + forecastParser.getIcon());
-        System.out.println("temperature: " + forecastParser.getTemperature());
-        
-        DesktopBackgroundBuilder backgroundBuilder = new DesktopBackgroundBuilder();
-        backgroundBuilder.build(forecastParser.getIcon(), forecastParser.getTemperature());
+    public static void main(String[] args) {
+        Timer weatherTimer = new Timer();
+        weatherTimer.schedule(new WeatherTimerTask(), DELAY, PERIOD);
     }
 }

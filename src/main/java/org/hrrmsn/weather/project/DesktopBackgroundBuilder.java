@@ -13,7 +13,9 @@ import javax.imageio.ImageIO;
  * @author hrrmsn
  */
 public class DesktopBackgroundBuilder {
-    private static final String PICTURES_FOLDER = "/home/hrrmsn/Plan9/dev/languages/java/weather-project/pictures";
+    private static final String WEATHER_PICTURES_FOLDER = "/home/hrrmsn/Plan9/dev/languages/java/weather-project"
+            + "/pictures";
+    private static final String HOME_PICTURES_FOLDER = "/home/hrrmsn/Pictures/Wallpapers";
     
     public DesktopBackgroundBuilder() {
     }
@@ -29,14 +31,13 @@ public class DesktopBackgroundBuilder {
     }
     
     private BufferedImage loadIconImage(String iconName) throws WeatherException {
-        BufferedImage iconImg = loadImage(PICTURES_FOLDER + File.separator + "icons" + File.separator + iconName 
+        BufferedImage iconImg = loadImage(WEATHER_PICTURES_FOLDER + File.separator + "icons" + File.separator + iconName 
                 + ".png");
         return iconImg;
     }
     
     private BufferedImage loadBackgroundTemplate() throws WeatherException {
-        BufferedImage backgroundTemplate = loadImage(PICTURES_FOLDER + File.separator 
-                + "desktop_background_template.jpg");
+        BufferedImage backgroundTemplate = loadImage(WEATHER_PICTURES_FOLDER + File.separator + "white.jpg");
         return backgroundTemplate;
     }
     
@@ -44,18 +45,19 @@ public class DesktopBackgroundBuilder {
         BufferedImage backgroundWithForecast = new BufferedImage(2560, 1600, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = backgroundWithForecast.createGraphics();
         g.drawImage(loadBackgroundTemplate(), 0, 0, null);
-        g.drawImage(loadIconImage(iconName), 2000, 150, null);
+        g.drawImage(loadIconImage(iconName), 2300, 150, null);
         int fontSize = 20;
         g.setFont(new Font("Times New Roman", Font.PLAIN, fontSize));
         g.setColor(Color.RED);
-        g.drawString(Double.toString(temperature) + "\u00b0C", 2090, 190);
+        g.drawString(Double.toString(temperature) + "\u00b0C", 2390, 190);
         g.dispose();
         
         try {
-            ImageIO.write(backgroundWithForecast, "jpg", new File(PICTURES_FOLDER + File.separator + "background.jpg"));
+            ImageIO.write(backgroundWithForecast, "jpg", new File(HOME_PICTURES_FOLDER + File.separator 
+                    + "forecast.jpg"));
         } catch (IOException e) {
-            throw new WeatherException("Error when writing background with forecast: " + PICTURES_FOLDER 
-                    + File.separator + "background.jpg", e);
+            throw new WeatherException("Error when writing background with forecast: " + HOME_PICTURES_FOLDER 
+                    + File.separator + "forecast.jpg", e);
         }
     }
 }
