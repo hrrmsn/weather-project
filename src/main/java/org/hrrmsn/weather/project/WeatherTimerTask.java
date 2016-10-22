@@ -22,8 +22,8 @@ public class WeatherTimerTask extends TimerTask {
             DesktopBackgroundBuilder backgroundBuilder = new DesktopBackgroundBuilder();
             backgroundBuilder.build(forecastParser.getIcon(), forecastParser.getTemperature());
             // print to console
-            System.out.println("icon: " + forecastParser.getIcon());
-            System.out.println("temperature: " + forecastParser.getTemperature());
+//            System.out.println("icon: " + forecastParser.getIcon());
+//            System.out.println("temperature: " + forecastParser.getTemperature());
             
             DesktopBackgroundUtilities desktopUtilities = new DesktopBackgroundUtilities();
             desktopUtilities.setBackgroundWithForecast();
