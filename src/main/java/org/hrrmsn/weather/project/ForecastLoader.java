@@ -20,16 +20,16 @@ public class ForecastLoader {
     private static final String URL_SEPARATOR = "/";
     
     private String latitude;
-    private String longtitude;
+    private String longitude;
     
-    public ForecastLoader(String latitude, String longtitude) {
+    public ForecastLoader(String latitude, String longitude) {
         this.latitude = latitude;
-        this.longtitude = longtitude;
+        this.longitude = longitude;
     }
     
     public String getForecast() throws WeatherException {
         String url = API_DARK_SKY_URL + URL_SEPARATOR + DARK_SKY_SECRET_KEY + URL_SEPARATOR + latitude + "," 
-                + longtitude;
+                + longitude;
         String charset = "UTF-8";
         String unitsParam = "si";
         InputStream response = null;

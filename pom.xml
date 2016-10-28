@@ -55,5 +55,10 @@
             <artifactId>json</artifactId>
             <version>20160810</version>
         </dependency>
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.2.1</version>
+        </dependency>
     </dependencies>
 </project>
