@@ -1,5 +1,8 @@
 package org.hrrmsn.weather.project;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,28 +17,66 @@ public class JSONWeatherParser {
         this.jsonObject = new JSONObject(jsonText);
     }
     
+    private JSONObject getCurrentlyJSONObject() {
+        return jsonObject.getJSONObject("currently");
+    }
+    
+    private JSONArray getHourlyJSONArray() {
+        return jsonObject.getJSONObject("hourly").getJSONArray("data");
+    }
+    
     public String getIcon() {
-        return jsonObject.getJSONObject("currently").getString("icon");
+        return getCurrentlyJSONObject().getString("icon");
     }
     
     public double getTemperature() {
-        return jsonObject.getJSONObject("currently").getDouble("temperature");
+        return getCurrentlyJSONObject().getDouble("temperature");
     }
     
     public double getApparentTemperature() {
-        return jsonObject.getJSONObject("currently").getDouble("apparentTemperature");
+        return getCurrentlyJSONObject().getDouble("apparentTemperature");
     }
     
     public double getWindSpeed() {
-        return jsonObject.getJSONObject("currently").getDouble("windSpeed");
+        return getCurrentlyJSONObject().getDouble("windSpeed");
     }
     
-    public double[] getHourlyTemperatures() {
-        JSONArray hourlyJSONArray = jsonObject.getJSONObject("hourly").getJSONArray("data");
-        double[] hourlyTemperatures = new double[hourlyJSONArray.length()];
+    public long getHourlyZeroUnixTimestamp() {
+        return getHourlyJSONArray().getJSONObject(0).getLong("time");
+    }
+    
+    // kindOfData is "temperature" for simple temperature
+    // kindOfData is "apparentTemperature" for apparent temperature
+    // kindOfData is "windSpeed" for wind speed
+    private List<Double> getHourlyData(String kindOfData) {
+        JSONArray hourlyJSONArray = getHourlyJSONArray();
+        List<Double> hourlyData = new ArrayList<Double>();
         for (int i = 0; i < hourlyJSONArray.length(); i++) {
-            hourlyTemperatures[i] = hourlyJSONArray.getJSONObject(i).getDouble("temperature");
+            hourlyData.add(hourlyJSONArray.getJSONObject(i).getDouble(kindOfData));
         }
-        return hourlyTemperatures;
+        return hourlyData;
+    }
+    
+    public List<Double> getHourlyTemperatures() {
+        return getHourlyData("temperature");
+    }
+    
+    public List<Double> getApparentHourlyTemperatures() {
+        return getHourlyData("apparentTemperature");
+    }
+    
+    public List<Double> getHourlyWindSpeeds() {
+        return getHourlyData("windSpeed");
+    }
+    
+    public List<Date> getHourlyTimeData() {
+        JSONArray hourlyJSONArray = getHourlyJSONArray();
+        List<Date> hourlyData = new ArrayList<Date>();
+        for (int i = 0; i < hourlyJSONArray.length(); i++) {
+            long time = hourlyJSONArray.getJSONObject(i).getLong("time");
+            Date date = new Date((long)(time * 1000));
+            hourlyData.add(date);
+        }
+        return hourlyData;
     }
 }

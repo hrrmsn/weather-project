@@ -6,6 +6,12 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import javax.imageio.ImageIO;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
@@ -46,20 +52,70 @@ public class DesktopBackgroundBuilder {
         return backgroundTemplate;
     }
     
-    private void createHourlyTemperaturesChart(JSONWeatherParser forecastParser) throws IOException {
-        double[] hours = new double[49];
-        for (int i = 0; i < hours.length; i++) {
-            hours[i] = i;
+    private void createHourlyTemperaturesChart(JSONWeatherParser forecastParser) throws WeatherException {
+        // parse hourly zero unix time
+        long currentUnixTimestamp = forecastParser.getHourlyZeroUnixTimestamp();
+        Date time = new Date((long)(currentUnixTimestamp * 1000));
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        String formattedDateStr = sdf.format(time);
+        System.out.println("formatted date: " + formattedDateStr);
+        
+        Date formattedDate;
+        try {
+            formattedDate = sdf.parse(formattedDateStr);
+        } catch (ParseException e) {
+            throw new WeatherException("Error when parsing UNIX time: ", e);
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(formattedDate);
+        int hoursOfStart = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutesOfStart = calendar.get(Calendar.MINUTE);
+        System.out.println("hours: " + hoursOfStart);
+        System.out.println("minutes: " + minutesOfStart);
+        
+        // create list of time strings
+        List<String> hours = new ArrayList<String>();
+        int index = 0;
+        while (index < 49) {
+            String currentTime = Integer.toString(hoursOfStart) + ":" + Integer.toString(minutesOfStart);
+            hours.add(currentTime);
+            ++index;
+            if (hoursOfStart < 23) {
+                ++hoursOfStart;
+            } else {
+                hoursOfStart = 0;
+            }
         }
         
-        XYChart chart = new XYChart(500, 500);
-        chart.setTitle("Hourly temperatures");
-        chart.setXAxisTitle("hours");
-        chart.setYAxisTitle("\u00b0C");
-        XYSeries series = chart.addSeries("t(hour)", hours, forecastParser.getHourlyTemperatures());
-        series.setMarker(SeriesMarkers.SQUARE);
+        // create chart
+        XYChart chart = new XYChart(900, 500);
+        chart.setTitle("Temperature, wind speed");
+        chart.setXAxisTitle("time");
+        chart.setYAxisTitle("\u00b0C, m/s");
         
-        BitmapEncoder.saveJPGWithQuality(chart, "/home/hrrmsn/Pictures/Wallpapers/chart.jpg", 1f);
+        XYSeries temperatureSeries = chart.addSeries("temperature(time)", forecastParser.getHourlyTimeData(), 
+                forecastParser.getHourlyTemperatures());
+        XYSeries apparentTemperatureSeries = chart.addSeries("apparent temperature(time)", 
+                forecastParser.getHourlyTimeData(), forecastParser.getApparentHourlyTemperatures());
+        XYSeries windSpeedSeries = chart.addSeries("wind speed(time)", forecastParser.getHourlyTimeData(), 
+                forecastParser.getHourlyWindSpeeds());
+        
+        temperatureSeries.setMarker(SeriesMarkers.CIRCLE);
+        temperatureSeries.setMarkerColor(Color.BLACK);
+        
+        apparentTemperatureSeries.setMarker(SeriesMarkers.CIRCLE);
+        apparentTemperatureSeries.setMarkerColor(Color.RED);
+        
+        windSpeedSeries.setMarker(SeriesMarkers.CIRCLE);
+        windSpeedSeries.setMarkerColor(Color.BLUE);
+        
+        // write chart into jpg image
+        try {
+            BitmapEncoder.saveJPGWithQuality(chart, "/home/hrrmsn/Pictures/Wallpapers/chart.jpg", 1f);
+        } catch (IOException e) {
+            throw new WeatherException("Error when creating chart image: ", e);
+        }
     }
     
     public void build(JSONWeatherParser forecastParser) throws WeatherException {
@@ -78,11 +134,8 @@ public class DesktopBackgroundBuilder {
         
         g.drawString("wind: " + Double.toString(forecastParser.getWindSpeed()) + " m/s", 2300, 265);
         
-//        try {
-//            createHourlyTemperaturesChart(forecastParser);
-//        } catch (IOException e) {
-//            throw new WeatherException("Error when creating hourly temperatures chart: ", e);
-//        }
+        // create chart
+        createHourlyTemperaturesChart(forecastParser);
         
         g.dispose();
         
