@@ -1,7 +1,11 @@
 package org.hrrmsn.weather.project;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.Timer;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -29,5 +33,23 @@ public class Main {
 
         // test
 //        double[] hourlyTemperatures = forecastParser.getHourlyTemperatures();
+
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                WidgetFrame widgetFrame = new WidgetFrame();
+                widgetFrame.setVisible(true);
+                
+                //make frame transparent
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsDevice gd = ge.getDefaultScreenDevice();
+                if (gd.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)) {
+                    System.out.println("Transclucency windows are supported");
+                } else {
+                    System.out.println("Transclucency windows aren't supported");
+                }
+            }
+        });
     }
 }
